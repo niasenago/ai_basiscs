@@ -25,6 +25,11 @@ def activation_function(a, function_type):
     elif function_type == ActivationFunction.SIGMOID_FUNCTION:
         return 1 / (1 + math.exp(-a))
 
+def calculate_accuracy(predictions, ground_truth):
+    correct = sum(p == t for p, t in zip(predictions, ground_truth))
+    return correct / len(ground_truth)
+
+###############################################
 input_data = [          # (x1,x2, class)
     ((-0.2, 0.5), 0), 
     ((0.2, -0.7), 0),
@@ -32,12 +37,20 @@ input_data = [          # (x1,x2, class)
     ((0.8, 1), 1)
 ]
 
-# we will bruteforce these 3 values
-bias = 0                # w0
-weights = (1,1)         # w1, w2
+# we need to bruteforce these 3 values
+bias = - 1.6            # w0
+weights = (2,0)         # w1, w2
+################################################
 
 if __name__ == "__main__":
     temp_results = apply_weights(input_data, weights, bias)
-    activation_function_type = ActivationFunction.STEP_FUNCTION
+    print('Choose activation function:\n'
+          'For STEP FUNCTION enter 1\n'
+          'For SIGMOID FUNCTION enter 2')
+    
+    activation_function_type_input = int(input())
+    activation_function_type = ActivationFunction(activation_function_type_input)
+
+    print(activation_function_type)
     outputs = apply_activation_func(temp_results,activation_function_type )
     print(outputs)
