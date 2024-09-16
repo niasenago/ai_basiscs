@@ -1,5 +1,6 @@
 from enum import Enum
 import math
+import json
 
 class ActivationFunction(Enum):
     STEP_FUNCTION = 1
@@ -29,13 +30,15 @@ def calculate_accuracy(predictions, ground_truth):
     correct = sum(p == t for p, t in zip(predictions, ground_truth))
     return correct / len(ground_truth)
 
-###############################################
-input_data = [          # (x1,x2, class)
-    ((-0.2, 0.5), 0), 
-    ((0.2, -0.7), 0),
-    ((0.8, -0.8), 1),
-    ((0.8, 1), 1)
-]
+def load_input_data(filename):
+    with open(filename, 'r') as f:
+        data = json.load(f)
+        input_data = [((item["inputs"][0], item["inputs"][1]), item["class"]) for item in data["input_data"]]
+        return input_data
+
+############################################### 
+# (x1,x2, class)
+input_data = load_input_data('data.json')
 
 # we need to bruteforce these 3 values
 bias = - 1.6            # w0

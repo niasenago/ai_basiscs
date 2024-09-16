@@ -1,0 +1,8 @@
+{
+    "input_data": [
+        { "inputs": [-0.2, 0.5], "class": 0 },
+        { "inputs": [0.2, -0.7], "class": 0 },
+        { "inputs": [0.8, -0.8], "class": 1 },
+        { "inputs": [0.8, 1], "class": 1 }
+    ]
+}
