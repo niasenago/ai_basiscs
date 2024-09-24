@@ -1,6 +1,6 @@
 import json
 import matplotlib.pyplot as plt
-from main import load_input_data
+from main import load_input_data, load_weights
 
 def visualize_input_data(input_data, best_weights, best_bias):
     # Separate inputs and their corresponding classes
@@ -45,8 +45,8 @@ if __name__ == "__main__":
     input_data = load_input_data('data.json')
 
     # Define the best weights and bias from the computation
-    best_weights = (2.2, 0.8)
-    best_bias = -1
+    weights, bias = load_weights('weights.json')
+
 
     # Visualize the input data and the decision boundary
-    visualize_input_data(input_data, best_weights, best_bias)
+    visualize_input_data(input_data, weights, bias)
