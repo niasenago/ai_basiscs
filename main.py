@@ -36,13 +36,20 @@ def load_input_data(filename):
         input_data = [((item["inputs"][0], item["inputs"][1]), item["class"]) for item in data["input_data"]]
         return input_data
 
+def load_weights(filename):
+    with open(filename, 'r') as f:
+        data = json.load(f)
+        bias = data["bias"]
+        weights = tuple(data["weights"])
+        return weights, bias
+    
 ############################################### 
 # (x1,x2, class)
 input_data = load_input_data('data.json')
 
-# we need to bruteforce these 3 values
-bias = - 1.6            # w0
-weights = (2,0)         # w1, w2
+# we bruteforce these 3 values   
+# w1, w2, w0
+weights, bias = load_weights('weights.json')
 ################################################
 
 if __name__ == "__main__":
