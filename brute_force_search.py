@@ -1,7 +1,11 @@
-from main import ActivationFunction, apply_weights, apply_activation_func, calculate_accuracy, load_input_data
+from main import ActivationFunction, apply_weights, apply_activation_func, load_input_data
 import math
 import random
 
+
+def calculate_accuracy(predictions, ground_truth):
+    correct = sum(p == t for p, t in zip(predictions, ground_truth))
+    return correct / len(ground_truth)
 
 def brute_force_search(input_data, activation_function_type):
     best_accuracy = 0

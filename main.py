@@ -27,10 +27,6 @@ def activation_function(a, function_type):
         sigmoid_value = 1 / (1 + math.exp(-a))
         return 1 if sigmoid_value >= 0.5 else 0
 
-def calculate_accuracy(predictions, ground_truth):
-    correct = sum(p == t for p, t in zip(predictions, ground_truth))
-    return correct / len(ground_truth)
-
 def load_input_data(filename):
     with open(filename, 'r') as f:
         data = json.load(f)
