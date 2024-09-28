@@ -24,7 +24,8 @@ def activation_function(a, function_type):
     if function_type == ActivationFunction.STEP_FUNCTION:
         return 1 if a >= 0 else 0
     elif function_type == ActivationFunction.SIGMOID_FUNCTION:
-        return 1 / (1 + math.exp(-a))
+        sigmoid_value = 1 / (1 + math.exp(-a))
+        return 1 if sigmoid_value >= 0.5 else 0
 
 def calculate_accuracy(predictions, ground_truth):
     correct = sum(p == t for p, t in zip(predictions, ground_truth))
