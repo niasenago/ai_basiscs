@@ -71,7 +71,12 @@ def random_brute_force_search(input_data, activation_function_type, num_iteratio
 if __name__ == "__main__":
     input_data = load_input_data('data.json')
 
-    activation_function_type = ActivationFunction.STEP_FUNCTION
+    print('Choose activation function:\n'
+          'For STEP FUNCTION enter 1\n'
+          'For SIGMOID FUNCTION enter 2')
+    
+    activation_function_type_input = int(input())
+    activation_function_type = ActivationFunction(activation_function_type_input)
     best_bias, best_weights, best_accuracy = brute_force_search(input_data, activation_function_type)
     
     print(f'Best Bias: {best_bias}')
