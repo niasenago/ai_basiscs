@@ -15,5 +15,3 @@ Preconditions: input data, weights and bias are set.
 
 Run the `main.py` script to apply the neuron model to the input data and observe the output. You'll be prompted to select an activation function.
 
-### Visualizing results:
-Run `visualize_data.json` script to see a graphical representation of our model.

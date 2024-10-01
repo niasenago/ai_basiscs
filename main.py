@@ -40,16 +40,13 @@ def load_weights(filename):
         weights = tuple(data["weights"])
         return weights, bias
     
-############################################### 
-# (x1,x2, class)
-input_data = load_input_data('data.json')
-
-# we bruteforce these 3 values   
-# w1, w2, w0
-weights, bias = load_weights('weights.json')
-################################################
 
 if __name__ == "__main__":
+    # (x1,x2, class)
+    input_data = load_input_data('data.json')
+   
+    # w1, w2, w0
+    weights, bias = load_weights('weights.json')    
     temp_results = apply_weights(input_data, weights, bias)
     print('Choose activation function:\n'
           'For STEP FUNCTION enter 1\n'
