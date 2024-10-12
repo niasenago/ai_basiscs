@@ -7,13 +7,16 @@ data sets.
 Neurono mokymui yra naudojamas stochastinis gradientinis nusileidimas ir sigmoidinis neuronas.
 
 ## Prerequisites:
-Installed ucimlrepo.
+pandas
+scikit-learn
 ```
-pip install ucimlrepo
+pip install pandas
+pip install scikit-learn
 ``` 
 To prepare input data we should: 
 - Change `Iris-versicolor` and `Iris-virginica` to 0 and 1 in Iris data.
 - Remove id column and all lines containing missing values In breast cancer data.
+- Convert the target values in the last column from 2 and 4 to 0 and 1 in breast cancer data
 
 So it's a nice practice working with Linux tools :D
 ----
@@ -27,3 +30,4 @@ grep -v '\?' breast-cancer-wisconsin.data > temp && mv temp breast-cancer-wiscon
  ```
 ---
 
+To convert target values run `data/convertion.sh` script
