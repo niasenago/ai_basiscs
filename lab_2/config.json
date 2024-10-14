@@ -1,0 +1,33 @@
+{
+    "hyperparameters": {
+      "learning_rate": 0.001,
+      "epoch_count": 50,
+      "wanted_accuracy": 0.8
+    },
+    "datasets": {
+      "IRIS": {
+        "url": "./data/iris.data",
+        "feature_names": [
+          "sepal length", 
+          "sepal width", 
+          "petal length", 
+          "petal width"
+        ]
+      },
+      "BREAST_CANCER": {
+        "url": "./data/breast-cancer-wisconsin-converted.data",
+        "feature_names": [
+          "Clump_thickness", 
+          "Uniformity_of_cell_size", 
+          "Uniformity_of_cell_shape", 
+          "Marginal_adhesion",
+          "Single_epithelial_cell_size", 
+          "Bare_nuclei", 
+          "Bland_chromatin", 
+          "Normal_nucleoli", 
+          "Mitoses"
+        ]
+      }
+    }
+  }
+  

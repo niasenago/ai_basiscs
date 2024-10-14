@@ -3,6 +3,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from enum import Enum
+import json
 
 # inspired by:https://builtin.com/machine-learning/pca-in-python
 
@@ -51,6 +52,17 @@ def visualize_data(principalDf, target):
     plt.show()
 
 def main():
+    # Load the config file
+    try:
+        with open("config.json", "r") as f:
+            config = json.load(f)
+    except FileNotFoundError:
+        print("Config file not found. Please ensure the config.json file exists.")
+        return
+    except json.JSONDecodeError:
+        print("Error reading the config file. Ensure it is valid JSON.")
+        return
+
     try:
         dataset_choice_input = input("Choose dataset ('iris' or 'breast-cancer'): ").strip().lower()
         dataset_choice = DatasetChoice(dataset_choice_input)
@@ -58,16 +70,23 @@ def main():
         print("Invalid dataset choice. Please choose 'iris' or 'breast-cancer'.")
         return
 
+    # Load the dataset URL and feature names from config
     if dataset_choice == DatasetChoice.IRIS:
-        url = "./data/iris.data"
-        feature_names = ['sepal length', 'sepal width', 'petal length', 'petal width']
-        df = pd.read_csv(url, names=(feature_names + ['target']))
-
+        dataset_config = config["datasets"]["IRIS"]
     elif dataset_choice == DatasetChoice.BREAST_CANCER:
-        url = "./data/breast-cancer-wisconsin-converted.data"
-        feature_names = ['Clump_thickness', 'Uniformity_of_cell_size', 'Uniformity_of_cell_shape', 'Marginal_adhesion',
-                         'Single_epithelial_cell_size', 'Bare_nuclei', 'Bland_chromatin', 'Normal_nucleoli', 'Mitoses']
+        dataset_config = config["datasets"]["BREAST_CANCER"]
+
+    url = dataset_config["url"]
+    feature_names = dataset_config["feature_names"]
+
+    try:
         df = pd.read_csv(url, names=(feature_names + ['target']))
+    except FileNotFoundError:
+        print(f"Dataset file not found at {url}.")
+        return
+    except pd.errors.ParserError:
+        print(f"Error parsing the dataset file at {url}.")
+        return
 
     # Separate out features and target
     features = df[feature_names]
