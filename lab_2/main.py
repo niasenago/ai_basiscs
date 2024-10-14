@@ -1,13 +1,17 @@
+import numpy as np
+from enum import Enum
 
 class ActivationFunction(Enum):
     STEP_FUNCTION = 1
-    SIGMOID_FUNCTION = 2 # we will thsi function in my case
+    SIGMOID_FUNCTION = 2 # we will this function in my case
 
-def apply_weights(input_data, weights, bias): #refactor this function to work with N weights and N inputs
-    results = []
-    for (x1, x2), _ in input_data:
-        result = (x1 * weights[0]) + (x2 * weights[1]) + bias
-        results.append(result)
+def apply_weights(input_data, weights, bias):  # Optimized for matrix multiplication
+    inputs = np.array([i for i, _ in input_data])  # Extracting the inputs from input_data
+    weights = np.array(weights)
+    bias = np.array(bias)
+
+    # Perform matrix multiplication and add the bias
+    results = np.dot(inputs, weights) + bias
     return results
     
 def apply_activation_func(temp_results, function_type):
