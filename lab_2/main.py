@@ -1,12 +1,14 @@
 import numpy as np
 from enum import Enum
+import math
+
 
 class ActivationFunction(Enum):
     STEP_FUNCTION = 1
     SIGMOID_FUNCTION = 2 # we will this function in my case
 
-def apply_weights(input_data, weights, bias):  # Optimized for matrix multiplication
-    inputs = np.array([i for i, _ in input_data])  # Extracting the inputs from input_data
+def apply_weights(input_data, weights, bias): # input data is a dataframe with atribute values and target
+    inputs = np.array([i for i, _ in input_data]) 
     weights = np.array(weights)
     bias = np.array(bias)
 

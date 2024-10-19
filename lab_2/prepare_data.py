@@ -54,10 +54,12 @@ def random_sampling_with_noise(dataset, num_samples, noise_level=0.01):
     
     return noisy_samples
 
-def shufle_data(list):
-    raise NotImplementedError
+def shuffle_data(df):
+    shuffled_df = df.sample(frac=1).reset_index(drop=True)
+    return shuffled_df
 
-def write_data(dataframe, file_path, delimiter=","):
+def write_data(df, file_path, delimiter=","):
+    dataframe = shuffle_data(df)
     # workaraund to save class as int value
     dataframe['Class'] = dataframe['Class'].astype(int)
     
