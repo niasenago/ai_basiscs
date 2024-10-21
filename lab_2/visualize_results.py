@@ -27,18 +27,18 @@ def plot_performance_data(performance_df, dataset_choice):
     fig, axs = plt.subplots(2, 1, figsize=(10, 8))
 
     # Plot Total Error vs. Epoch
-    axs[0].plot(performance_df['epoch'], performance_df['totalError'], color='blue', label='Total Error')
-    axs[0].set_title(f"MSE vs. Epoch ({dataset_choice.value})")
-    axs[0].set_xlabel('Epoch')
-    axs[0].set_ylabel('Mean squared rrror')
+    axs[0].plot(performance_df['epoch'], performance_df['totalError'], color='blue', label='Paklaida')
+    axs[0].set_title(f"Paklaida ({dataset_choice.value})")
+    axs[0].set_xlabel('Epocha')
+    axs[0].set_ylabel('Paklaida')
     axs[0].legend()
     axs[0].grid(True)
 
     # Plot Accuracy vs. Epoch
-    axs[1].plot(performance_df['epoch'], performance_df['accuracy'], color='green', label='Accuracy')
-    axs[1].set_title(f"Accuracy vs. Epoch ({dataset_choice.value})")
-    axs[1].set_xlabel('Epoch')
-    axs[1].set_ylabel('Accuracy')
+    axs[1].plot(performance_df['epoch'], performance_df['accuracy'], color='green', label='Klasifikavimo tikslumas')
+    axs[1].set_title(f"Klasifikavimo tikslumas ({dataset_choice.value})")
+    axs[1].set_xlabel('Epocha')
+    axs[1].set_ylabel('Klasifikavimo tikslumas')
     axs[1].legend()
     axs[1].grid(True)
 
@@ -46,8 +46,6 @@ def plot_performance_data(performance_df, dataset_choice):
     plt.show()
 
 def main():
-    # Load the config file
-    print("main works")
     try:
         with open("config.json", "r") as f:
             config = json.load(f)
