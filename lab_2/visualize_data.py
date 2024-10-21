@@ -26,14 +26,14 @@ def flatten_data(data):
     return principalDf
 
 
-def visualize_data(principalDf, target):
+def visualize_data(principalDf, target, dataset_choice_input):
     finalDf = pd.concat([principalDf, target], axis=1)
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
-    ax.set_xlabel('Feature 1', fontsize=15)
-    ax.set_ylabel('Feature 2', fontsize=15)
-    ax.set_title('2 dimensional dataset', fontsize=20)
+    ax.set_xlabel('Demensija 1', fontsize=15)
+    ax.set_ylabel('Demensija 2', fontsize=15)
+    ax.set_title(f'2 demensijų duomenys ({dataset_choice_input})', fontsize=20)
 
     targets = [0, 1]
     colors = ['r', 'g']
@@ -94,7 +94,7 @@ def main():
 
     # Perform dimension resuction and visualize the results
     principalDf = flatten_data(features)
-    visualize_data(principalDf, target)
+    visualize_data(principalDf, target, dataset_choice_input)
 
 if __name__ == "__main__":
     main()
