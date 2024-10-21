@@ -7,6 +7,7 @@ from visualize_data import DatasetChoice
 def sigmoid(a):
     return 1 / (1 + np.exp(-a))
 
+# source: https://math.stackexchange.com/questions/78575/derivative-of-sigmoid-function-sigma-x-frac11e-x
 def sigmoid_derivative(a):
     return sigmoid(a) * (1 - sigmoid(a))
 
@@ -34,7 +35,7 @@ def read_parameters(config_file, dataset_choice):
     elif dataset_choice == DatasetChoice.BREAST_CANCER:
         dataset_config = config["datasets"]["BREAST_CANCER"]
 
-    url = dataset_config["url"]
+    url = dataset_config["url_for_learning"]
 
     return learning_rate, epoch_count, wanted_accuracy, url
 
@@ -48,14 +49,24 @@ def run_grad_descent(input_df, epoch_count, wanted_accuracy, learning_rate):
     bias = np.random.rand()
 
     for epoch in range(epoch_count):
+        total_error = 0
         weights, bias = descend(input_data, weights, bias, learning_rate, target_class)
 
-        # Compute accuracy after each epoch
         predictions = sigmoid(np.dot(input_data, weights) + bias)
+
+        # total error across all training examples
+        for i in range(len(predictions)):
+            error = (predictions[i] - target_class.iloc[i]) ** 2
+            total_error += error
+
+        # the proportion of correct predictions aka accuracy 
         accuracy = np.mean((predictions >= 0.5) == target_class)
-        
-        # Check if desired accuracy is reached
+
+        print(f'Epoch {epoch + 1}, Total Error: {total_error}, Accuracy: {accuracy}')
+
+        # Stop early if desired accuracy is reached
         if accuracy >= wanted_accuracy:
+            print(f"Desired accuracy reached after {epoch + 1} epochs")
             break
     
     return weights, bias, accuracy
@@ -67,14 +78,15 @@ def descend(input_data, weights, bias, learning_rate, target_class):
         target = target_class.iloc[i]
         
         # compute weighted sum and activation
-        z = np.dot(inputs, weights) + bias
-        prediction = sigmoid(z) # ???
+        weighted_sum = np.dot(inputs, weights) + bias
+        prediction = sigmoid(weighted_sum)
         
-        # Compute error
+        # Compute error: this is part of SGD
         error = prediction - target
         
         # Backpropagation: compute gradients
-        dZ = error * sigmoid_derivative(z)
+        dZ = error * sigmoid_derivative(weighted_sum)
+        # dW = error * sigmoid' * [x1, x2 .. xn]
         dW = np.dot(np.array(inputs).T, dZ)  # Gradient of weights
         dB = dZ  # Gradient of bias
         

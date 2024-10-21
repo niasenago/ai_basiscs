@@ -1,7 +1,7 @@
 {
     "hyperparameters": {
       "learning_rate": 0.001,
-      "epoch_count": 700,
+      "epoch_count": 500,
       "wanted_accuracy": 0.8
     },
     "datasets": {
@@ -12,7 +12,9 @@
           "sepal width", 
           "petal length", 
           "petal width"
-        ]
+        ], 
+        "url_for_learning": "./data/iris.augmented.4learning.data",
+        "url_for_testing": "./data/iris.augmented.4tests.data"
       },
       "BREAST_CANCER": {
         "url": "./data/breast-cancer-wisconsin-converted.data",
@@ -26,7 +28,9 @@
           "Bland_chromatin", 
           "Normal_nucleoli", 
           "Mitoses"
-        ]
+        ],
+        "url_for_learning": "./data/breast-cancer-wisconsin-converted.4learning.data",
+        "url_for_testing": "./data/breast-cancer-wisconsin-converted.4tests.data"
       }
     }
   }
