@@ -2,7 +2,7 @@
     "hyperparameters": {
       "learning_rate": 0.001,
       "epoch_count": 500,
-      "wanted_accuracy": 0.8
+      "wanted_accuracy": 0.97
     },
     "datasets": {
       "IRIS": {
