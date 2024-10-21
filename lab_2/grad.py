@@ -39,7 +39,29 @@ def read_parameters(config_file, dataset_choice):
 
     return learning_rate, epoch_count, wanted_accuracy, url
 
-# Mokymas stabdomas arba atlikus iš anksto nustatytą iteracijų (ar epochų) skaičių, arba pasiekus norimą mažą paklaidos reikšmę.
+def evaluate_performance(predictions, target_class, epoch):
+    total_error = 0
+
+    # MSE
+    for i in range(len(predictions)):
+        error = (predictions[i] - target_class.iloc[i]) ** 2
+        total_error += error
+    total_error = total_error / len(predictions) 
+
+    # the proportion of correct predictions aka accuracy 
+    accuracy = np.mean((predictions >= 0.5) == target_class)
+
+    return {
+        'epoch': epoch + 1,
+        'totalError': total_error,
+        'accuracy': accuracy
+    }
+
+
+
+###
+# Returns best weights, biases, thier accuracy and dataframe with epoch, accuracy and totalError 
+##
 def run_grad_descent(input_df, epoch_count, wanted_accuracy, learning_rate):
     input_data = input_df.iloc[:, :-1]  # Attributes (all columns except last)
     target_class = input_df.iloc[:, -1]  # Target class (last column)
@@ -48,28 +70,26 @@ def run_grad_descent(input_df, epoch_count, wanted_accuracy, learning_rate):
     weights = np.random.rand(input_data.shape[1])  # Number of weights equals number of attributes
     bias = np.random.rand()
 
+    performance_data = []
+
     for epoch in range(epoch_count):
-        total_error = 0
         weights, bias = descend(input_data, weights, bias, learning_rate, target_class)
 
         predictions = sigmoid(np.dot(input_data, weights) + bias)
 
-        # total error across all training examples
-        for i in range(len(predictions)):
-            error = (predictions[i] - target_class.iloc[i]) ** 2
-            total_error += error
+        performance = evaluate_performance(predictions, target_class, epoch)
+        performance_data.append(performance)
 
-        # the proportion of correct predictions aka accuracy 
-        accuracy = np.mean((predictions >= 0.5) == target_class)
-
-        print(f'Epoch {epoch + 1}, Total Error: {total_error}, Accuracy: {accuracy}')
+        if epoch % 20 == 0:
+            print(f"Epoch {performance['epoch']}, Total Error: {performance['totalError']}, Accuracy: {performance['accuracy']}")
 
         # Stop early if desired accuracy is reached
-        if accuracy >= wanted_accuracy:
-            print(f"Desired accuracy reached after {epoch + 1} epochs")
+        if performance['accuracy'] >= wanted_accuracy:
+            print(f"Desired accuracy reached after {performance['epoch']} epochs")
             break
+    performance_df = pd.DataFrame(performance_data)        
     
-    return weights, bias, accuracy
+    return weights, bias, performance['accuracy'], performance_df
 
 # Neurono mokymui naudoti stochastinį gradientinį nusileidimą ir sigmoidinį neuroną.
 def descend(input_data, weights, bias, learning_rate, target_class):
@@ -86,8 +106,8 @@ def descend(input_data, weights, bias, learning_rate, target_class):
         
         # Backpropagation: compute gradients
         dZ = error * sigmoid_derivative(weighted_sum)
-        # dW = error * sigmoid' * [x1, x2 .. xn]
-        dW = np.dot(np.array(inputs).T, dZ)  # Gradient of weights
+        # dW = error * sigmoid' * [x1, x2 .. xn]; in other words it's a gradient of weights
+        dW = np.dot(np.array(inputs).T, dZ) 
         dB = dZ  # Gradient of bias
         
         # Update weights and bias
@@ -97,11 +117,28 @@ def descend(input_data, weights, bias, learning_rate, target_class):
     return weights, bias
 
 
-
-
 def read_data_into_dataframe(filename):
     df = pd.read_csv(filename, header=None)    
     return df
+
+def save_results(dataset_choice_input, weights, bias, performance_df):
+    results_dir = "./results"
+
+    weights_file = f"{results_dir}/{dataset_choice_input}.weights.json"
+    performance_file = f"{results_dir}/{dataset_choice_input}.learning.performance.csv"
+
+    weights_data = {
+        'weights': weights.tolist(),  # Convert NumPy array to list
+        'bias': bias
+    }
+    with open(weights_file, 'w') as f:
+        json.dump(weights_data, f, indent=4)
+
+    print(f"Weights and bias saved to {weights_file}")
+
+    performance_df.to_csv(performance_file, index=False)
+    print(f"Performance data saved to {performance_file}")
+
 
 def main ():
     config_file = "config.json"
@@ -125,11 +162,13 @@ def main ():
     print(df.head())  # Show the first few rows for confirmation
 
     # Run gradient descent on the dataset
-    weights, bias, accuracy = run_grad_descent(df, epoch_count, wanted_accuracy, learning_rate)
+    weights, bias, accuracy, performance_df = run_grad_descent(df, epoch_count, wanted_accuracy, learning_rate)
 
     print(f"Final Weights: {weights}")
     print(f"Final Bias: {bias}")
     print(f"Final Accuracy: {accuracy}")
+    print(f"Peroformace:\n{performance_df}")
+    save_results(dataset_choice_input, weights, bias, performance_df)    
 
 
 if __name__ == "__main__":
