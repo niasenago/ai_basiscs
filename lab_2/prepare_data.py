@@ -16,9 +16,8 @@ def read_data(file_path, delimiter=","):
     return data
 
 
-# after normalization number of elements in the each class should be greater or equal to 200
 def normilize_data(dataframe, target_size=250, noise_level=0.01):
-    augmented_data = []  # Initialize as an empty list instead of DataFrame
+    augmented_data = [] 
     
     # Iterate over each class in the dataset
     for class_label in dataframe['Class'].unique():

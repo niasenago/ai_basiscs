@@ -67,8 +67,8 @@ def run_grad_descent(input_df, epoch_count, wanted_accuracy, learning_rate):
     target_class = input_df.iloc[:, -1]  # Target class (last column)
 
     # Initialize weights and bias
-    weights = np.random.rand(input_data.shape[1])  # Number of weights equals number of attributes
-    bias = np.random.rand()
+    weights = 2 * np.random.rand(input_data.shape[1]) - 1 # Number of weights equals number of attributes
+    bias = 2 * np.random.rand() - 1
 
     performance_data = []
 
