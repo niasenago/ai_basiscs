@@ -4,6 +4,7 @@ from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
 import json
 
@@ -77,42 +78,95 @@ def build_model_hardcoded(json_path, input_shape):
     return model
 
 
-def load_data(path):
-    pass
-    # Load dataset
 
-def prepare_data(df):
-    pass
-    # Prepare features and labels
+def load_pre_split_data(train_dir, val_dir, test_dir, target_size=(128, 128), batch_size=32):
+    """
+    Load already split data from pre-defined folders.
+    """
+    datagen = ImageDataGenerator(rescale=1.0 / 255.0)  # Normalize pixel values
 
-    # Train-test-validation split
+    # Load training data
+    train_data = datagen.flow_from_directory(
+        train_dir,
+        target_size=target_size,
+        color_mode="rgb",
+        class_mode="binary",
+        batch_size=batch_size,
+        shuffle=True
+    )
+
+    # Load validation data
+    val_data = datagen.flow_from_directory(
+        val_dir,
+        target_size=target_size,
+        color_mode="rgb",
+        class_mode="binary",
+        batch_size=batch_size,
+        shuffle=False
+    )
+
+    # Load test data
+    test_data = datagen.flow_from_directory(
+        test_dir,
+        target_size=target_size,
+        color_mode="rgb",
+        class_mode="binary",
+        batch_size=batch_size,
+        shuffle=False
+    )
+
+    return train_data, val_data, test_data
+
+def prepare_data(data, test_size=0.1, val_size=0.1):
+    """
+    Prepare features and labels and split into train, validation, and test sets.
+    """
+    X = data[0]
+    y = data[1]
+
+    # Split into train and test
+    X_train, X_temp, y_train, y_temp = train_test_split(X, y, test_size=test_size + val_size, random_state=42)
+    
+    # Split the temp set into validation and test
+    test_split_ratio = test_size / (test_size + val_size)
+    X_val, X_test, y_val, y_test = train_test_split(X_temp, y_temp, test_size=test_split_ratio, random_state=42)
+    
+    return X_train, X_val, X_test, y_train, y_val, y_test
 
 def normalize_features(data):
     scaler = StandardScaler()    
     normalized_data = scaler.fit_transform(data)
     return normalized_data
-    # Normalize the features
-
-
-# hiperparameters
-def read_hyperparams(file_path):
-    with open(file_path, 'r') as file:
-        return json.load(file)   
+    # Normalize the features (mb we should also devide each color by 255 )
 
 
 def main():
-    epochs, brach_size, kernel_size = 20, 32, 9
+        # Load hyperparameters
+    with open("hyperparams.json", 'r') as file:
+        hyperparams = json.load(file)
+    epochs = hyperparams["training"]["epochs"]
+    batch_size = hyperparams["training"]["batch_size"]
     
-    input_shape = (28, 28, 1)  # Example input shape for grayscale image data
+    input_shape = (128, 128, 3)  # Example input shape for RGB image data
     model = build_model_hardcoded("hyperparams.json", input_shape=input_shape)
+    
+    # Load pre-split data
+    train_dir = "./data/new_train"
+    val_dir = "./data/new_val"
+    test_dir = "./data/new_test"
+    train_data, val_data, test_data = load_pre_split_data(train_dir, val_dir, test_dir)
 
-    model.summary()
-   # model.compile(loss='binary_crossentropy', optimizer='sgd', metrics=['accuracy'])
-    #model.fit(X_train, y_train, epochs=20, batch_size=32)
-
-    # Compile the model
     # Train the model
+    history = model.fit(
+        train_data,
+        epochs=epochs,
+        validation_data=val_data
+    )
+
     # Evaluate the model
+    loss, accuracy = model.evaluate(test_data)
+    print(f"Test Loss: {loss}, Test Accuracy: {accuracy}")
+
 
 if __name__ == "__main__":
     main()
