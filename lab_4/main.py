@@ -3,10 +3,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.metrics import accuracy_score
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
+from tensorflow.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense, BatchNormalization
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
 import numpy as np
+import logging
+from tensorflow.keras.models import load_model
 import json
+import argparse
+import io
+from contextlib import redirect_stdout
 
 def build_model_from_json(json_path, input_shape=None):
     with open(json_path, 'r') as file:
@@ -31,6 +36,8 @@ def build_model_from_json(json_path, input_shape=None):
 
         elif layer_type == "Dropout":
             model.add(Dropout(rate=layer["rate"]))
+        elif layer_type == "BatchNormalization":
+            model.add(BatchNormalization())             
 
         first_layer = False  # Input shape only for the first layer
 
@@ -139,33 +146,101 @@ def normalize_features(data):
     return normalized_data
     # Normalize the features (mb we should also devide each color by 255 )
 
+def log_model_summary(model, log_file):
+    with io.StringIO() as buf, redirect_stdout(buf):
+        model.summary()
+        summary = buf.getvalue()
+    with open(log_file, "a") as f:
+        f.write("\nModel Architecture:\n")
+        f.write(summary)
+    logging.info("Model architecture logged successfully.")
+
 
 def main():
+    try:
+        parser = argparse.ArgumentParser(description="Train a model based on a hyperparameters JSON file.")
+
+        # Add arguments
+        parser.add_argument(
+            "--hyperparams",
+            type=str,
+            required=True,
+            help="Path to the hyperparameters JSON file"
+        )
+        parser.add_argument(
+            "--model_name",
+            type=str,
+            required=True,
+            help="Name of the model"
+        )
+
+        # Parse arguments
+        args = parser.parse_args()
+
+        # Extract arguments
+        hyperparams_path = args.hyperparams
+        model_name = args.model_name  
+        logging.basicConfig(
+            filename=f"{model_name}_training.log",
+            level=logging.INFO,
+            format="%(asctime)s - %(levelname)s - %(message)s",
+            filemode="w"  # Overwrite existing log file
+        )
+
+        # Log starting of the program
+        logging.info("Program started.")
+        logging.info(f"Using hyperparameters file: {hyperparams_path}")
+        logging.info(f"Your model name is: {model_name}")
+
+
         # Load hyperparameters
-    with open("hyperparams.json", 'r') as file:
-        hyperparams = json.load(file)
-    epochs = hyperparams["training"]["epochs"]
-    batch_size = hyperparams["training"]["batch_size"]
-    
-    input_shape = (128, 128, 3)  # Example input shape for RGB image data
-    model = build_model_hardcoded("hyperparams.json", input_shape=input_shape)
-    
-    # Load pre-split data
-    train_dir = "./data/new_train"
-    val_dir = "./data/new_val"
-    test_dir = "./data/new_test"
-    train_data, val_data, test_data = load_pre_split_data(train_dir, val_dir, test_dir)
+        with open(hyperparams_path, 'r') as file:
+            hyperparams = json.load(file)
+        epochs = hyperparams["training"]["epochs"]
+        batch_size = hyperparams["training"]["batch_size"]
+        logging.info(f"Hyperparameters loaded: epochs={epochs}, batch_size={batch_size}")
 
-    # Train the model
-    history = model.fit(
-        train_data,
-        epochs=epochs,
-        validation_data=val_data
-    )
+        input_shape = (128, 128, 3)  # Example input shape for RGB image data
+        
+        model = build_model_from_json("hyperparams.json", input_shape=input_shape)
+        
+        logging.info("Model built successfully.")
+        log_model_summary(model, f"{model_name}.summary.log")
 
-    # Evaluate the model
-    loss, accuracy = model.evaluate(test_data)
-    print(f"Test Loss: {loss}, Test Accuracy: {accuracy}")
+        # Load pre-split data
+        train_dir = "./data/new_train"
+        val_dir = "./data/new_val"
+        test_dir = "./data/new_test"
+        train_data, val_data, test_data = load_pre_split_data(train_dir, val_dir, test_dir)
+        logging.info("Data loaded successfully from pre-split directories.")
+
+        # Train the model
+        logging.info("Starting training...")
+        history = model.fit(
+            train_data,
+            epochs=epochs,
+            validation_data=val_data
+        )
+        logging.info("Training completed.")
+        
+        history_path = f"{model_name}_history.json"
+        with open(history_path, 'w') as file:
+            json.dump(history.history, file)
+        logging.info(f"Training history saved to '{history_path}'.")
+
+        # Evaluate the model
+        logging.info("Starting evaluation on the test data...")
+        loss, accuracy = model.evaluate(test_data)
+        logging.info(f"Test Loss: {loss}, Test Accuracy: {accuracy}")
+        print(f"Test Loss: {loss}, Test Accuracy: {accuracy}")
+
+        # Save the trained model
+        model.save(f"{model_name}.h5")
+        logging.info(f"Model saved as '{model_name}.h5'.")
+
+    except Exception as e:
+        logging.error(f"An error occurred: {str(e)}", exc_info=True)
+        raise
 
 
 if __name__ == "__main__":
