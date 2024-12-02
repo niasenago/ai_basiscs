@@ -3,7 +3,7 @@ import shutil
 from sklearn.model_selection import train_test_split
 import random
 
-# Define paths and desired ratios
+# paths and desired ratios
 data_dir = "./data"
 all_data_dir = "./data/all_data"
 output_dirs = {
@@ -12,8 +12,9 @@ output_dirs = {
     "test": "./data/new_test"
 }
 ratios = {"train": 0.8, "val": 0.1, "test": 0.1}
+reduce_factor = 0.7  
 
-# Step 1: Combine all data into one directory
+# Combine all data into one directory
 def combine_data(data_dir, all_data_dir):
     if not os.path.exists(all_data_dir):
         os.makedirs(all_data_dir)
@@ -30,7 +31,23 @@ def combine_data(data_dir, all_data_dir):
                     dest_file = os.path.join(category_dir, file)
                     shutil.copy(source_file, dest_file)
 
-# Step 2: Re-divide data into train, validation, and test sets
+# Reduce the number of samples
+def reduce_samples(all_data_dir, reduce_factor):
+    for category in ["chihuahua", "muffin"]:
+        category_path = os.path.join(all_data_dir, category)
+        files = os.listdir(category_path)
+        
+        # Calculate the reduced number of samples
+        reduced_count = int(len(files) * reduce_factor)
+        reduced_files = random.sample(files, reduced_count)
+        
+        # Clear the directory and keep only the reduced files
+        for file in files:
+            file_path = os.path.join(category_path, file)
+            if file not in reduced_files:
+                os.remove(file_path)
+
+# Re-divide data into train, validation, and test sets
 def split_data(all_data_dir, output_dirs, ratios):
     for category in ["chihuahua", "muffin"]:
         category_path = os.path.join(all_data_dir, category)
@@ -55,12 +72,11 @@ def split_data(all_data_dir, output_dirs, ratios):
                 dest_file = os.path.join(split_dir, file)
                 shutil.copy(source_file, dest_file)
 
-# Main script
 if __name__ == "__main__":
-    # Step 1: Combine data
     combine_data(data_dir, all_data_dir)
     
-    # Step 2: Re-divide data
+    reduce_samples(all_data_dir, reduce_factor)
+    
     split_data(all_data_dir, output_dirs, ratios)
     
     print("Data preparation and splitting complete!")

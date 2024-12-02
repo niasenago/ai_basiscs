@@ -202,7 +202,7 @@ def main():
 
         input_shape = (128, 128, 3)  # Example input shape for RGB image data
         
-        model = build_model_from_json("hyperparams.json", input_shape=input_shape)
+        model = build_model_from_json(hyperparams_path, input_shape=input_shape)
         
         logging.info("Model built successfully.")
         log_model_summary(model, f"{model_name}.summary.log")
