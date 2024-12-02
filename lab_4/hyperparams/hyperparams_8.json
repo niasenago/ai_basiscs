@@ -1,0 +1,57 @@
+{
+  "layers": [
+    {
+      "type": "Conv2D",
+      "filters": 32,
+      "kernel_size": [3, 3],
+      "activation": "relu"
+    },
+    {
+      "type": "BatchNormalization"
+    },
+    {
+      "type": "Dropout",
+      "rate": 0.25
+    },
+    {
+      "type": "MaxPooling2D",
+      "pool_size": [2, 2]
+    },
+    {
+      "type": "Conv2D",
+      "filters": 64,
+      "kernel_size": [3, 3],
+      "activation": "relu"
+    },
+    {
+      "type": "BatchNormalization"
+    },
+    {
+      "type": "Dropout",
+      "rate": 0.25
+    },
+    {
+      "type": "MaxPooling2D",
+      "pool_size": [2, 2]
+    },
+    {
+      "type": "Conv2D",
+      "filters": 128,
+      "kernel_size": [3, 3],
+      "activation": "relu"
+    },
+    {
+      "type": "BatchNormalization"
+    },
+    {
+      "type": "Dropout",
+      "rate": 0.25
+    }
+  ],
+  "training": {
+    "optimizer": "adam",
+    "loss_function": "binary_crossentropy",
+    "epochs": 100,
+    "batch_size": 32
+  }
+}

@@ -87,9 +87,6 @@ def build_model_hardcoded(json_path, input_shape):
 
 
 def load_pre_split_data(train_dir, val_dir, test_dir, target_size=(128, 128), batch_size=32):
-    """
-    Load already split data from pre-defined folders.
-    """
     datagen = ImageDataGenerator(rescale=1.0 / 255.0)  # Normalize pixel values
 
     # Load training data
@@ -140,11 +137,6 @@ def prepare_data(data, test_size=0.1, val_size=0.1):
     
     return X_train, X_val, X_test, y_train, y_val, y_test
 
-def normalize_features(data):
-    scaler = StandardScaler()    
-    normalized_data = scaler.fit_transform(data)
-    return normalized_data
-    # Normalize the features (mb we should also devide each color by 255 )
 
 def log_model_summary(model, log_file):
     with io.StringIO() as buf, redirect_stdout(buf):
