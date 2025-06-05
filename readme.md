@@ -15,3 +15,5 @@ The repository is structured into folders corresponding to each lab assignment. 
 
 **Aim**: The goal of this lab is to train a single artificial neuron to solve a two-class classification problem using the provided datasets.
 
+[4nd lab work](lab_4/readme.md)
+**Aim**: The goal of this lab is to create a CNN model to classify muffins and chihuahuas.
